@@ -1,0 +1,32 @@
+
+ * 2019.10.07-
+   - advanced: BERT in Keras = https://towardsdatascience.com/bert-in-keras-with-tensorflow-hub-76bcbc9417b
+   - keras/Embedding megértéséhez: https://machinelearningmastery.com/use-word-embedding-layers-deep-learning-keras
+     - lehet, hogy még jobb: https://stats.stackexchange.com/questions/270546
+     - vagy ez: https://stats.stackexchange.com/questions/335793 (!)
+       - ezt nagyon szeretnem pluszozni, de hogy is tudok belepni???
+       i szóval a keras-ban "usual" learned embedding van <--> word2vec: spec kihegyezve a kollokacionalitásra! (!)
+   - esetleg: seq2seq = https://blog.keras.io/a-ten-minute-introduction-to-sequence-to-sequence-learning-in-keras.html
+   - esetleg: https://keras.io/getting-started/sequential-model-guide
+     i ebben vannak alappéldák
+   - aztán megérteni az összes alkotóelemet:
+     $ cat keras/examples/* | grep "\.add(" | sed "s/.*\.add/add/g" | sstat | sort -k2,2 | less
+   - most jöhetne az, hogy megérteni az imdb_cnn_sb.py szkriptnek a részleteit
+     i megnézegettem, de a doksi hát nem túl sokat mond... (!) XXX :)
+      _ITT_T
+   + 2019.10.09. megcsináltam a  _Petőfi-Arany elkülönítőt_ 
+     $ python3 petofi-arany.py
+     + preprocessing = szöveges dataset előkészítése
+       -- csomót kutattam, mire rájöttem, hogy kell
+     i eredmény: F1 = 70.6%
+     - ki lehet próbálni két mail folderem anyagán is: piar vs spam
+     - hm.. hogy is viszonyul ez a doc2vec-hez -- gondolom butább
+       - pontosan hogy is működik az Embedding layer itt?
+     ! kérdés: ilyenkor mit csinál az ember, hogyan lehet ezen javítani? (?)
+   + 2019.10.07. próbálgattam az examples/imdb_cnn.py -t
+     -> saját verzióm: [./imdb_cnn_sb.py] (!) XXX :)
+     $ python3 imdb_cnn_sb.py 
+     e esetleg az alapokhoz: https://machinelearningmastery.com/tutorial-first-neural-network-python-keras
+   + 2019.10.07. installáltam a keras-t -- kb. a honlapi leírás szerint :)
+           ! kéne mentés errol a cuccrol... vagy tegyem github-ra? hm.. (!) XXX
+
