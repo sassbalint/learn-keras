@@ -7,6 +7,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.layers import Embedding
 from keras.layers import Conv1D, GlobalMaxPooling1D
+from keras.layers import LSTM
 
 from keras.preprocessing.text import Tokenizer
 import random
@@ -16,14 +17,14 @@ import keras_metrics as km
 # set parameters:
 num_words = 20000 # only use top N words -- nem beleértve a spec tokeneket!
 maxlen = 400 # !!!ezt alább felülírom!!!
-batch_size = 32
+batch_size = 512
 embedding_dims = 50
 conv1d_filters = 250
 conv1d_kernel_size = 3
 hidden_dims = 250
 epochs = 2
 
-data_size = 100000 # max = 25000
+data_size = 1000000 # :)
 
 train_test_split = 0.8
 
@@ -49,10 +50,17 @@ print(' * Loading data...')
 # -----
 
 #reader = csv.reader( open('petofi-arany-data/toy-data'), delimiter='\t' )
-reader = csv.reader( open('petofi-arany-data/data'), delimiter='\t' )
+#reader = csv.reader( open('petofi-arany-data/data'), delimiter='\t' )
+#reader = csv.reader( open('petofi-arany-data/utonevek.data'), delimiter='\t' )
+reader = csv.reader( open('petofi-arany-data/enhu.data'), delimiter='\t' )
 
 # https://stackoverflow.com/questions/37138491
 data = list( reader )
+
+print(' * Data size:', len(data))
+print(' * Truncate data to', data_size)
+data = data[:data_size]
+
 data = [ [ x[0], int(x[1]) ] for x in data ]
 
 print( data[:data_head] )
@@ -82,7 +90,7 @@ texts = [ t[0] for t in data ]
 # plusz még az imdb.load_data forrását is nézegettem
 # https://stackoverflow.com/questions/51956000
 # ... vajon miért hívja ezt a cuccot "Tokenizer"-nek? :)
-tokenizer = Tokenizer( num_words=num_words, oov_token="<UNK>" )
+tokenizer = Tokenizer( num_words=num_words, char_level=True, oov_token="<UNK>" )
 tokenizer.fit_on_texts( texts )
 
 # hozzátesszük a spec tokeneket
@@ -129,13 +137,6 @@ print('x_train shape:', x_train.shape)
 print('x_test shape:', x_test.shape)
 print('x_train:', x_train[:data_head])
 print('x_test:', x_test[:data_head])
-print(' * Truncate data...')
-x_train = x_train[:data_size]
-y_train = y_train[:data_size]
-x_test = x_test[:data_size]
-y_test = y_test[:data_size]
-print('x_train shape:', x_train.shape)
-print('x_test shape:', x_test.shape)
 
 print()
 print(' * Build model...')
@@ -149,7 +150,7 @@ model.add(Embedding(num_words,
 model.add(Dropout(0.2))
 
 # we add a Convolution1D, which will learn filters
-# word group filters of size filter_length:
+# word group filters of size filter_length: f1=71.5%
 model.add(Conv1D(conv1d_filters,
                  conv1d_kernel_size,
                  padding='valid',
@@ -158,7 +159,16 @@ model.add(Conv1D(conv1d_filters,
 # we use max pooling:
 model.add(GlobalMaxPooling1D())
 
-# We add a vanilla hidden layer:
+# XXX mi van, ha Conv1D helyett LSTM-et nyomok? :) f1=71% (2 x Dense esetén)
+#model.add(LSTM(256,
+#               dropout=0.3,
+#               recurrent_dropout=0.3))
+
+# We add a vanilla hidden layer: f1=70.6%
+model.add(Dense(hidden_dims))
+model.add(Dropout(0.2))
+model.add(Activation('relu'))
+# XXX benyomok még egy réteget, akkor vajh mi lesz? :) f1=71.5%
 model.add(Dense(hidden_dims))
 model.add(Dropout(0.2))
 model.add(Activation('relu'))
@@ -174,6 +184,8 @@ model.compile(loss='binary_crossentropy',
 # https://stackoverflow.com/questions/43076609
 # itt kell beírni, hogy milyen mértékeket szeretnék
 # elvileg nem kell km-et használni, de másképp nekem nem megy...
+
+print( model.summary() )
 
 print(' * Fit...')
 model.fit(x_train, y_train,
@@ -203,4 +215,18 @@ print( y_test[:data_head] )
 print(' * Predictions on new data:')
 classes = model.predict(x_test, batch_size=batch_size)
 print( classes[:data_head] )
+
+predicted = list( int(x[0]) for x in classes.round() )
+
+misclassified = 0
+for i, (y, p ) in enumerate( zip( y_test, predicted ) ):
+  if y != p:
+    text = [id_to_word[id] for id in x_test[i] if id != 0] # XXX ~ copy-paste!
+    print( i, y, p, ''.join(text) )
+    misclassified += 1
+
+print( " * Misclassified:", misclassified )
+
+#print( y_test )
+#print( list( int(x[0]) for x in classes.round() ) )
 

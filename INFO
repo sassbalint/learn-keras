@@ -1,11 +1,17 @@
 
- * 2019.10.07-
+   - wang2vec = nem csak BoW, hanem a szavak sorrendjet is figyelembe veszi! Kell!
+     - és akkor olvasgatni hozzá, amit Marci régen ajánlott, vmi dep-es embedding cuccokat...
    - advanced: BERT in Keras = https://towardsdatascience.com/bert-in-keras-with-tensorflow-hub-76bcbc9417b
-   - keras/Embedding megértéséhez: https://machinelearningmastery.com/use-word-embedding-layers-deep-learning-keras
+   - keras/Embedding megértéséhez:
+     ! ez tán a legjobb: https://adventuresinmachinelearning.com/word2vec-keras-tutorial 
+     - https://machinelearningmastery.com/use-word-embedding-layers-deep-learning-keras
      - lehet, hogy még jobb: https://stats.stackexchange.com/questions/270546
      - vagy ez: https://stats.stackexchange.com/questions/335793 (!)
        - ezt nagyon szeretnem pluszozni, de hogy is tudok belepni???
        i szóval a keras-ban "usual" learned embedding van <--> word2vec: spec kihegyezve a kollokacionalitásra! (!)
+     - esetleg: https://www.tensorflow.org/tutorials/text/word_embeddings
+     - esetleg: https://datawarrior.wordpress.com/2016/05/15/word-embedding-algorithms
+       bár szte a keras Embedding = w2v, ami sztem hülyeség!!!
    - esetleg: seq2seq = https://blog.keras.io/a-ten-minute-introduction-to-sequence-to-sequence-learning-in-keras.html
    - esetleg: https://keras.io/getting-started/sequential-model-guide
      i ebben vannak alappéldák
@@ -13,7 +19,18 @@
      $ cat keras/examples/* | grep "\.add(" | sed "s/.*\.add/add/g" | sstat | sort -k2,2 | less
    - most jöhetne az, hogy megérteni az imdb_cnn_sb.py szkriptnek a részleteit
      i megnézegettem, de a doksi hát nem túl sokat mond... (!) XXX :)
-      _ITT_T
+   - Marci ötlete: BiLSTM -- mert az most a sztenderd... (!) XXX :)
+   k Marci: nézzem meg, hogy mit osztályoz félre!!! -- kb. megvan
+     - nezzem meg a petofi-aranyra is! :)
+
+ _ITT_T (2019.10.10.)
+
+   + 2019.10.10. új adat: utonevek.data + enhu.data (!) XXX :)
+     ! refactor + commit jó lenne = ésszerű könyvtárnevek stb.
+   + 2019.10.10. továbbikét adatbázisra:
+     o petőfi-arany: F1 = 70.6%
+     o fiúnév-lánynév: F1 ~ 80%
+     o magyar szó - angol szó: F1 ~ 95%
    + 2019.10.09. megcsináltam a  _Petőfi-Arany elkülönítőt_ 
      $ python3 petofi-arany.py
      + preprocessing = szöveges dataset előkészítése
@@ -29,4 +46,7 @@
      e esetleg az alapokhoz: https://machinelearningmastery.com/tutorial-first-neural-network-python-keras
    + 2019.10.07. installáltam a keras-t -- kb. a honlapi leírás szerint :)
            ! kéne mentés errol a cuccrol... vagy tegyem github-ra? hm.. (!) XXX
+   x 
+   i Marci: manapság lényeg a  _pretrain (avagy transfer learning)
+     = nagy adaton unsup feltanítani (pl. embeddinget), és azt használni a modellünkben!
 
